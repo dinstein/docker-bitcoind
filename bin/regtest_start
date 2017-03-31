@@ -14,19 +14,21 @@ RPC_PASSWORD=${RPCPASSWORD:-`dd if=/dev/urandom bs=33 count=1 2>/dev/null | base
 BITCOIND_PORT_BASE=${BITCOIND_PORT_BASE:-23000}
 RPC_PORT_BASE=${RPC_PORT_BASE:-23100}
 
-for ((i=1; $i <= ${NODE_NUM}; i=$(($i+1))));do
+for ((i=${NODE_NUM}; $i > 0; i=$(($i-1))));do
     BITCOIND_PORT=$((${BITCOIND_PORT_BASE}+$i))
     RPC_PORT=$((${RPC_PORT_BASE}+$i))
     DATADIR=$HOME/regtest/$i/
     mkdir -p ${DATADIR}
 
-    if (($i < ${NODE_NUM}));then
-        CONNECT_PORT=$((${BITCOIND_PORT}+1))
+    if (($i > 1));then
+        CONNECT_PORT=$((${BITCOIND_PORT}-1))
+        DAEMON="-daemon"
     else
-        CONNECT_PORT=$((${BITCOIND_PORT_BASE}+1))
+        CONNECT_PORT=$((${BITCOIND_PORT_BASE}+${NODE_NUM}))
+        DAEMON=""
     fi
 
-    bitcoind -server -listen -regtest -daemon -debug \
+    bitcoind -server -listen -regtest ${DAEMON} -debug \
         -port=${BITCOIND_PORT} -connect=${CONNECT_PORT} \
         -rpcport=${RPC_PORT} -rpcuser=${RPC_USER} -rpcpassword=${RPC_PASSWORD} \
         -rpcallowip=0.0.0.0/0 -rpcallowip=::/0 \
