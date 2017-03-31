@@ -7,7 +7,6 @@ if [ $# -eq 1 ]; then
 else
     NODE_NUM=5
 fi
-echo $NODE_NUM
 
 RPC_USER=${RPCUSER:-bitcoinrpc}
 RPC_PASSWORD=${RPCPASSWORD:-`dd if=/dev/urandom bs=33 count=1 2>/dev/null | base64`}
@@ -28,23 +27,29 @@ for ((i=${NODE_NUM}; $i > 0; i=$(($i-1))));do
         DAEMON=""
     fi
 
+    # Use command
     # bitcoind -server -listen -regtest ${DAEMON} -debug \
         # -port=${BITCOIND_PORT} -connect=localhost:${CONNECT_PORT} \
         # -rpcport=${RPC_PORT} -rpcuser=${RPC_USER} -rpcpassword=${RPC_PASSWORD} \
         # -rpcallowip=0.0.0.0/0 -rpcallowip=::/0 \
         # datadir=${DATADIR} -pid=${DATADIR}/.pid
 
+    # Use conf file
     cat <<EOF > ${DATADIR}/bitcoin.conf
+server=1
+listen=1
+regtest=1
+debug=1
 port=${BITCOIND_PORT}
 connect=localhost:${CONNECT_PORT}
 rpcport=${RPC_PORT}
 rpcuser=${RPC_USER}
 rpcpassword=${RPC_PASSWORD}
+rpcallowip=0.0.0.0/0
+rpcallowip=::/0
 EOF
 
-    bitcoind -server -listen -regtest ${DAEMON} -debug \
-        -conf=${DATADIR}/bitcoin.conf \
-        -rpcallowip=0.0.0.0/0 -rpcallowip=::/0 \
+    bitcoind ${DAEMON} -conf=${DATADIR}/bitcoin.conf \
         -datadir=${DATADIR} -pid=${DATADIR}/.pid
 
 done
