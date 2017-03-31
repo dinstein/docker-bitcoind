@@ -29,7 +29,7 @@ for ((i=${NODE_NUM}; $i > 0; i=$(($i-1))));do
     fi
 
     bitcoind -server -listen -regtest ${DAEMON} -debug \
-        -port=${BITCOIND_PORT} -connect=${CONNECT_PORT} \
+        -port=${BITCOIND_PORT} -connect=localhost:${CONNECT_PORT} \
         -rpcport=${RPC_PORT} -rpcuser=${RPC_USER} -rpcpassword=${RPC_PASSWORD} \
         -rpcallowip=0.0.0.0/0 -rpcallowip=::/0 \
         -datadir=${DATADIR} -pid=${DATADIR}/.pid
