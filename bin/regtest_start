@@ -32,7 +32,7 @@ for ((i=${NODE_NUM}; $i > 0; i=$(($i-1))));do
         # -port=${BITCOIND_PORT} -connect=localhost:${CONNECT_PORT} \
         # -rpcport=${RPC_PORT} -rpcuser=${RPC_USER} -rpcpassword=${RPC_PASSWORD} \
         # -rpcallowip=0.0.0.0/0 -rpcallowip=::/0 \
-        # datadir=${DATADIR} -pid=${DATADIR}/.pid
+        # datadir=${DATADIR} -pid=${DATADIR}/.pid -reindex
 
     # Use conf file
     cat <<EOF > ${DATADIR}/bitcoin.conf
@@ -40,6 +40,7 @@ server=1
 listen=1
 regtest=1
 debug=1
+txindex=1
 port=${BITCOIND_PORT}
 connect=localhost:${CONNECT_PORT}
 rpcport=${RPC_PORT}
@@ -50,6 +51,6 @@ rpcallowip=::/0
 EOF
 
     bitcoind ${DAEMON} -conf=${DATADIR}/bitcoin.conf \
-        -datadir=${DATADIR} -pid=${DATADIR}/.pid
+        -datadir=${DATADIR} -pid=${DATADIR}/.pid -reindex
 
 done
